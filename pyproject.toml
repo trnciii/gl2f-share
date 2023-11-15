@@ -1,0 +1,22 @@
+[build-system]
+requires = ['setuptools', 'setuptools_scm']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'gl2f-share'
+license = { text = 'PolyForm-Noncommercial-1.0.0' }
+dynamic = ['version']
+dependencies = []
+requires-python = '>=3.8'
+
+[tool.setuptools]
+packages = ['gl2f_share']
+
+[tool.setuptools.dynamic]
+version = {attr = 'gl2f_share.__version__.version'}
+
+[tool.setuptools_scm]
+write_to = 'gl2f_share/__version__.py'
+
+[project.urls]
+'Homepage' = 'https://github.com/trnciii/gl2f-share'
