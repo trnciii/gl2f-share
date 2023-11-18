@@ -20,3 +20,10 @@ write_to = 'gl2f_share/__version__.py'
 
 [project.urls]
 'Homepage' = 'https://github.com/trnciii/gl2f-share'
+
+[project.optional-dependencies]
+dev = [
+	'gl2f',
+	'pytest',
+	'pytest-pylint',
+]
