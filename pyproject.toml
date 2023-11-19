@@ -7,7 +7,7 @@ name = 'gl2f-share'
 license = { text = 'PolyForm-Noncommercial-1.0.0' }
 dynamic = ['version']
 dependencies = [
-	'gl2f'
+	'gl2f>=0.3.13'
 ]
 requires-python = '>=3.8'
 
