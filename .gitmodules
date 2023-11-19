@@ -1,0 +1,3 @@
+[submodule "gl2f_share/ayame"]
+	path = gl2f_share/ayame
+	url = https://github.com/trnciii/ayame

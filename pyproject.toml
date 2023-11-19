@@ -6,7 +6,9 @@ build-backend = 'setuptools.build_meta'
 name = 'gl2f-share'
 license = { text = 'PolyForm-Noncommercial-1.0.0' }
 dynamic = ['version']
-dependencies = []
+dependencies = [
+	'gl2f'
+]
 requires-python = '>=3.8'
 
 [tool.setuptools]
@@ -23,7 +25,6 @@ write_to = 'gl2f_share/__version__.py'
 
 [project.optional-dependencies]
 dev = [
-	'gl2f',
 	'pytest',
 	'pytest-pylint',
 ]
