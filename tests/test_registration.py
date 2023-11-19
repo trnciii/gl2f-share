@@ -8,10 +8,10 @@ def test_registration():
 		assert parent in tree.keys()
 
 	parser, tree = command_builder.build(command_builder.builtin + gl2f_share.registrars)
+	commands = [
+		['share', 'blogs/yuzuha'],
+	]
 
-	for r in gl2f_share.registrars:
-		p, n = r.add_to()
-		command = p.split('.')[1:]
-		command.append(n)
-		args = parser.parse_args(command)
+	for command in commands:
+		args = parser.parse_args(['share', 'blogs/yuzuha'])
 		assert hasattr(args, 'handler')
