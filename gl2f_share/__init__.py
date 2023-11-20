@@ -1,5 +1,4 @@
 import urllib.parse
-import webbrowser
 from gl2f.core import lister, pretty, member, board
 from .ayame import terminal as term
 
@@ -53,6 +52,9 @@ def compose(args):
 	return text, hashtags, urls
 
 def intent_x(text, hashtags, urls):
+	import webbrowser
+	webbrowser.register("termux-open '%s'", None)
+
 	text_list = [text] + urls if text else urls
 
 	params = []
