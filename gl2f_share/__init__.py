@@ -19,11 +19,12 @@ def delimiter():
 	return f'{"-"*20}・ _ ・{"-"*20}'
 
 def preview(text, hashtags, urls):
-	print(delimiter())
-	print('text:', text)
-	print('hashtags:', ' '.join(map(add_hash, hashtags)))
-	print('urls:', ' '.join(map(lambda t:term.mod(t, term.color('blue', 'fl')), urls)))
-	print(delimiter())
+	return f'''{delimiter()}
+Preview
+  text     : {text}
+  hashtags : {' '.join(map(add_hash, hashtags))}
+  urls     : {' '.join(map(lambda t:term.mod(t, term.color('blue', 'fl')), urls))}
+{delimiter()}'''
 
 def all_hashtags():
 	tags = []
@@ -43,12 +44,11 @@ def compose(args):
 	hashtags = sorted(set(sum(map(to_hashtags, items), [])))
 	urls = [board.content_url(i) for i in items]
 
-	preview(text, hashtags, urls)
+	print(preview(text, hashtags, urls))
 
-	if input('edit hashtags? (y/n)').lower() == 'y':
+	if input('edit hashtags? (y/N)').lower() == 'y':
 		hashtags = term.selected(all_hashtags(), format=add_hash, default=[i in hashtags for i in all_hashtags()])
 
-	print('Continue in browser')
 	return text, hashtags, urls
 
 def intent_x(text, hashtags, urls):
@@ -76,6 +76,7 @@ def share(args):
 
 	text, hashtags, urls = compose(args)
 
+	print(preview(text, hashtags, urls))
 	todo = term.selected(['copy to clipboard', 'continue on X'])
 	if 'copy to clipboard' in todo:
 		pyperclip.copy(f'{text} {" ".join(urls)} {" ".join(f"#{t}" for t in hashtags)}')
