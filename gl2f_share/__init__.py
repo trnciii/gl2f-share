@@ -72,8 +72,15 @@ def intent_x(text, hashtags, urls):
 
 
 def share(args):
+	import pyperclip
+
 	text, hashtags, urls = compose(args)
-	intent_x(text, hashtags, urls)
+
+	todo = term.selected(['copy to clipboard', 'continue on X'])
+	if 'copy to clipboard' in todo:
+		pyperclip.copy(f'{text} {" ".join(urls)} {" ".join(f"#{t}" for t in hashtags)}')
+	if 'continue on X' in todo:
+		intent_x(text, hashtags, urls)
 
 
 class Gl2f_Share:
