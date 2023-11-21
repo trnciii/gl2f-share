@@ -1,5 +1,4 @@
 import urllib.parse
-import webbrowser
 from gl2f.core import lister, pretty, member, board
 from .ayame import terminal as term
 
@@ -20,11 +19,12 @@ def delimiter():
 	return f'{"-"*20}・ _ ・{"-"*20}'
 
 def preview(text, hashtags, urls):
-	print(delimiter())
-	print('text:', text)
-	print('hashtags:', ' '.join(map(add_hash, hashtags)))
-	print('urls:', ' '.join(map(lambda t:term.mod(t, term.color('blue', 'fl')), urls)))
-	print(delimiter())
+	return f'''{delimiter()}
+Preview
+  text     : {text}
+  hashtags : {' '.join(map(add_hash, hashtags))}
+  urls     : {' '.join(map(lambda t:term.mod(t, term.color('blue', 'fl')), urls))}
+{delimiter()}'''
 
 def all_hashtags():
 	tags = []
@@ -44,15 +44,17 @@ def compose(args):
 	hashtags = sorted(set(sum(map(to_hashtags, items), [])))
 	urls = [board.content_url(i) for i in items]
 
-	preview(text, hashtags, urls)
+	print(preview(text, hashtags, urls))
 
-	if input('edit hashtags? (y/n)').lower() == 'y':
+	if input('edit hashtags? (y/N)').lower() == 'y':
 		hashtags = term.selected(all_hashtags(), format=add_hash, default=[i in hashtags for i in all_hashtags()])
 
-	print('Continue in browser')
 	return text, hashtags, urls
 
 def intent_x(text, hashtags, urls):
+	import webbrowser
+	webbrowser.register("termux-open '%s'", None)
+
 	text_list = [text] + urls if text else urls
 
 	params = []
@@ -70,8 +72,16 @@ def intent_x(text, hashtags, urls):
 
 
 def share(args):
+	import pyperclip
+
 	text, hashtags, urls = compose(args)
-	intent_x(text, hashtags, urls)
+
+	print(preview(text, hashtags, urls))
+	todo = term.selected(['copy to clipboard', 'continue on X'])
+	if 'copy to clipboard' in todo:
+		pyperclip.copy(f'{text} {" ".join(urls)} {" ".join(f"#{t}" for t in hashtags)}')
+	if 'continue on X' in todo:
+		intent_x(text, hashtags, urls)
 
 
 class Gl2f_Share:
