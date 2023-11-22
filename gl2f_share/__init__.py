@@ -26,6 +26,9 @@ Preview
   urls     : {' '.join(map(lambda t:term.mod(t, term.color('blue', 'fl')), urls))}
 {delimiter()}'''
 
+def build(text, hashtags, urls):
+	return f'{text} {" ".join(urls)} {" ".join(f"#{t}" for t in hashtags)}'
+
 def all_hashtags():
 	tags = []
 	tags.append('Girls2')
@@ -77,11 +80,13 @@ def share(args):
 	text, hashtags, urls = compose(args)
 
 	print(preview(text, hashtags, urls))
-	todo = term.selected(['copy to clipboard', 'continue on X'])
+	todo = term.selected(['copy to clipboard', 'continue on X', 'print'])
 	if 'copy to clipboard' in todo:
-		pyperclip.copy(f'{text} {" ".join(urls)} {" ".join(f"#{t}" for t in hashtags)}')
+		pyperclip.copy(build(text, hashtags, urls))
 	if 'continue on X' in todo:
 		intent_x(text, hashtags, urls)
+	if 'print' in todo:
+		print(build(text, hashtags, urls))
 
 
 class Gl2f_Share:
