@@ -12,18 +12,28 @@ def to_hashtags(item):
 		return [fullname, group]
 	return []
 
+def make_blue(s):
+	return term.mod(s, term.color('blue', 'fl'))
+
 def add_hash(t):
-	return term.mod(f'#{t}', term.color('blue'))
+	return make_blue(f'#{t}')
 
 def delimiter():
 	return f'{"-"*20}・ _ ・{"-"*20}'
 
 def preview(text, hashtags, urls):
+	if len(urls)>1:
+		urls_string = ''.join(map(lambda t:f'\n  - {make_blue(t)}', urls))
+	elif len(urls) == 1:
+		urls_string = f' {make_blue(urls[0])}'
+	else:
+		urls_string = ''
+
 	return f'''{delimiter()}
 Preview
   text     : {text}
   hashtags : {' '.join(map(add_hash, hashtags))}
-  urls     : {' '.join(map(lambda t:term.mod(t, term.color('blue', 'fl')), urls))}
+  urls     :{urls_string}
 {delimiter()}'''
 
 def build(text, hashtags, urls):
@@ -41,7 +51,14 @@ def all_hashtags():
 
 def compose(args):
 	fm = pretty.from_args(args)
-	items = term.selected(lister.list_contents(args), fm.format)
+	if args.pick:
+		items = lister.list_contents(args)
+		items = [items[i-1] for i in args.pick if 0<i<=len(items)]
+		print('Articles to share')
+		for i in items:
+			fm.print(i)
+	else:
+		items = term.selected(lister.list_contents(args), fm.format)
 
 	text = input('Compose a post: ')
 	hashtags = sorted(set(sum(map(to_hashtags, items), [])))
@@ -100,6 +117,8 @@ class Gl2f_Share:
 		pretty.add_args(parser)
 		parser.add_argument('--target', choices={'x'}, default=None,
 			help='where to share')
+		parser.add_argument('--pick', type=int, nargs='+',
+			help='select articles to show')
 		parser.set_defaults(handler = lambda a:share(a))
 
 	@staticmethod
