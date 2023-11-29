@@ -113,6 +113,8 @@ class Gl2f_Share:
 
 	@staticmethod
 	def add_args(parser):
+		parser.description = 'Compose a post for SNS'
+
 		lister.add_args(parser)
 		pretty.add_args(parser)
 		parser.add_argument('--target', choices={'x'}, default=None,
