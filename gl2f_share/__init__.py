@@ -21,23 +21,34 @@ def add_hash(t):
 def delimiter():
 	return f'{"-"*20}・ _ ・{"-"*20}'
 
-def preview(text, hashtags, urls):
-	if len(urls)>1:
-		urls_string = ''.join(map(lambda t:f'\n  - {make_blue(t)}', urls))
-	elif len(urls) == 1:
-		urls_string = f' {make_blue(urls[0])}'
-	else:
-		urls_string = ''
+class Post:
+	def __init__(self, text, hashtags, title, urls):
+		self.text = text
+		self.hashtags = hashtags
+		self.title = title
+		self.urls = urls
 
-	return f'''{delimiter()}
+	def preview(self):
+		if len(self.urls)>1:
+			urls_string = ''.join(map(lambda t:f'\n  - {make_blue(t)}', self.urls))
+		elif len(self.urls) == 1:
+			urls_string = f' {make_blue(self.urls[0])}'
+		else:
+			urls_string = ''
+
+		return f'''{delimiter()}
 Preview
-  text     : {text}
-  hashtags : {' '.join(map(add_hash, hashtags))}
-  urls     :{urls_string}
+  text          : {self.text}
+  hashtags      : {' '.join(map(add_hash, self.hashtags))}
+  article title : {self.title}
+  urls          : {urls_string}
 {delimiter()}'''
 
-def build(text, hashtags, urls):
-	return f'{text} {" ".join(urls)} {" ".join(f"#{t}" for t in hashtags)}'
+	def build(self):
+		return f'{self.text} {self.title} {" ".join(self.urls)} {" ".join(f"#{t}" for t in self.hashtags)}'
+
+def add_title(items):
+	return ' '.join(map(lambda i:i['values']['title'], items)) if 'n' != input('add article title? (Y/n)').lower() else ''
 
 def all_hashtags():
 	tags = []
@@ -62,26 +73,29 @@ def compose(args):
 
 	text = input('Compose a post: ')
 	hashtags = sorted(set(sum(map(to_hashtags, items), [])))
+	title = add_title(items)
 	urls = [board.content_url(i) for i in items]
 
-	print(preview(text, hashtags, urls))
+	post = Post(text, hashtags, title, urls)
+
+	print(post.preview())
 
 	if input('edit hashtags? (y/N)').lower() == 'y':
-		hashtags = term.selected(all_hashtags(), format=add_hash, default=[i in hashtags for i in all_hashtags()])
+		post.hashtags = term.selected(all_hashtags(), format=add_hash, default=[i in hashtags for i in all_hashtags()])
 
-	return text, hashtags, urls
+	return post
 
-def intent_x(text, hashtags, urls):
+def intent_x(post):
 	import webbrowser
 	webbrowser.register("termux-open '%s'", None)
 
-	text_list = [text] + urls if text else urls
+	text_list = [post.text, post.title] + post.urls if post.text else post.urls
 
 	params = []
 	if text_list:
 		params.append(f'text={urllib.parse.quote(" ".join(text_list))}')
-	if hashtags:
-		params.append(f'hashtags={urllib.parse.quote(",".join(hashtags))}')
+	if post.hashtags:
+		params.append(f'hashtags={urllib.parse.quote(",".join(post.hashtags))}')
 
 	if params:
 		intent = f'https://twitter.com/intent/tweet?{"&".join(params)}'
@@ -94,16 +108,16 @@ def intent_x(text, hashtags, urls):
 def share(args):
 	import pyperclip
 
-	text, hashtags, urls = compose(args)
+	post = compose(args)
+	print(post.preview())
 
-	print(preview(text, hashtags, urls))
 	todo = term.selected(['copy to clipboard', 'continue on X', 'print'])
 	if 'copy to clipboard' in todo:
-		pyperclip.copy(build(text, hashtags, urls))
+		pyperclip.copy(post.build())
 	if 'continue on X' in todo:
-		intent_x(text, hashtags, urls)
+		intent_x(post)
 	if 'print' in todo:
-		print(build(text, hashtags, urls))
+		print(post.build())
 
 
 class Gl2f_Share:
