@@ -69,7 +69,7 @@ def compose(args):
 		for i in items:
 			fm.print(i)
 	else:
-		items = term.selected(lister.list_contents(args), fm.format)
+		items = term.selected(lister.Pager(args), args.page, fm.format)
 
 	text = input('Compose a post: ')
 	hashtags = sorted(set(sum(map(to_hashtags, items), [])))
@@ -81,7 +81,7 @@ def compose(args):
 	print(post.preview())
 
 	if input('edit hashtags? (y/N)').lower() == 'y':
-		post.hashtags = term.selected(all_hashtags(), format=add_hash, default=[i in hashtags for i in all_hashtags()])
+		post.hashtags = term.selected(all_hashtags(), to_string=add_hash, default=[i in hashtags for i in all_hashtags()])
 
 	return post
 
